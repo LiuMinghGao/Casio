@@ -148,7 +148,8 @@ export default {
            this.axios.get("http://127.0.0.1:3000/addCart?did="+did+"&price="+price+"&count="+count)
            .then(res=>{
                if(res.data.code>0){
-                   Toast(res.data.msg)
+                   Toast(res.data.msg);
+                   this.$store.commit("update");
                }else{
                    Toast("请先登录")
                }
@@ -161,6 +162,7 @@ export default {
         goodsAdd(){
             this.val++
         },
+        //获取商品详情
         getGoodsInfo(){
             this.axios.get("http://127.0.0.1:3000/getDetails/?did="+this.did)
             .then(res=>{

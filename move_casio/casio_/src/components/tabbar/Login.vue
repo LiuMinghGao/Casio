@@ -22,7 +22,8 @@
            </div>
 		</div>
         <div v-show="isShow" class="user">
-            欢迎您:{{msg}}
+            <div>欢迎您:{{msg}}</div>
+            <div class="safety"><router-link to="/Safety">安全中心</router-link></div>
             <div><button @click="logout">退出登录</button></div>
         </div>
     </div>
@@ -31,7 +32,7 @@
 import {Toast} from "mint-ui";
 export default {
     created(){
-        this.checkuid()
+        this.checkuid();
     },
     data(){
         return{
@@ -39,31 +40,23 @@ export default {
             upwd:"",
             msg:"",
             isSHOW:true,
-            isShow:false
+            isShow:false,
+            loginSuccess:false
         }
     },
     methods:{
+        //退出登录
         logout(){
             this.axios.get("http://127.0.0.1:3000/logout")
             .then(res=>{
                if(res.data.code>0){
                     Toast(res.data.msg);
-                    this.isSHOW=true,
-                    this.isShow=false
+                   this.$store.commit("update");
+                   this.$router.push("/Home");
                 }
             })
         },
-        checkuid(){
-            this.axios.get("http://127.0.0.1:3000/checkuid")
-            .then(res=>{
-                console.log(res.data.data)
-                if(res.data.code>0){
-                    this.msg=res.data.data.uname;
-                    this.isShow=true,
-                    this.isSHOW=false
-                }
-            })
-        },
+        //登陆
         login(){
             if(this.uname==""){
                 Toast("用户名不能为空");
@@ -75,15 +68,33 @@ export default {
             }
             var uname=this.uname;
             var upwd=this.upwd;
-            this.axios.get("http://127.0.0.1:3000/login?uname="+uname+"&upwd="+upwd)
+            let data=this.qs.stringify({
+              uname,
+              upwd
+             });
+            this.axios.post("http://127.0.0.1:3000/login",data)
             .then(res=>{
                 if(res.data.code>0){
                     Toast(res.data.msg);
                       this.uname="";
                       this.upwd="";
-                      history.go(0)
+                      this.isShow=true;
+                      this.isSHOW=false;
+                      //调用方法 获取用户名
+                      this.checkuid();
+                      this.$store.commit("update");
                 }else{
                         Toast(res.data.msg)
+                }
+            })
+        },
+         checkuid(){
+            this.axios.get("http://127.0.0.1:3000/checkuid")
+            .then(res=>{
+               if(res.data.code>0){
+                    this.msg=res.data.data.uname;
+                    this.isShow=true;
+                    this.isSHOW=false;
                 }
             })
         }
@@ -125,6 +136,15 @@ export default {
   }
   .mui-content{
       margin-top: 1rem;
+  }
+  .safety{
+      margin:10px 10px;
+  }
+  .safety a{
+      color:#000
+  }
+  .user div:first-child{
+      margin:0 10px;
   }
 </style>
 

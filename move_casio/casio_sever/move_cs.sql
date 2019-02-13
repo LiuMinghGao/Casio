@@ -91,19 +91,29 @@ INSERT INTO move_cs_comment VALUES(null,'22',now(),1);
 #创建商品列表 move_cs_product
 CREATE TABLE move_cs_product(
   pid INT PRIMARY KEY AUTO_INCREMENT,
+	fl INT,
 	img VARCHAR(225),
   title VARCHAR(2000),
   price DECIMAL(10,2),
   shelf_time DATE
 );
-INSERT INTO move_cs_product VALUES(null,'http://127.0.0.1:3000/img/thumb1.jpg',"DW-5600CX-4",1188,"2018-9-12");
-INSERT INTO move_cs_product VALUES(null,'http://127.0.0.1:3000/img/thumb2.jpg',"GA-110DDR-7A",1288,"2018-10-06");
-INSERT INTO move_cs_product VALUES(null,'http://127.0.0.1:3000/img/thumb3.jpg',"DW-5600HDR-1",1388,"2018-9-15");
-INSERT INTO move_cs_product VALUES(null,'http://127.0.0.1:3000/img/thumb4.jpg',"DW-5600SLG-7",1688,"2018-12-02");
-INSERT INTO move_cs_product VALUES(null,'http://127.0.0.1:3000/img/thumb5.jpg',"GA-135DD-1A",1888,"2018-9-26");
-INSERT INTO move_cs_product VALUES(null,'http://127.0.0.1:3000/img/thumb6.jpg',"GAW-100CG-4A",1988,"2018-11-12");
-INSERT INTO move_cs_product VALUES(null,'http://127.0.0.1:3000/img/thumb7.jpg',"GWF-1035F-1",988,"2018-3-28");
-INSERT INTO move_cs_product VALUES(null,'http://127.0.0.1:3000/img/thumb8.jpg',"DW-6900SLG-1",888,"2018-6-19");
+INSERT INTO move_cs_product VALUES(null,2,'http://127.0.0.1:3000/img/thumb1.jpg',"DW-5600CX-4",1188,"2018-9-12");
+INSERT INTO move_cs_product VALUES(null,2,'http://127.0.0.1:3000/img/thumb2.jpg',"GA-110DDR-7A",1288,"2018-10-06");
+INSERT INTO move_cs_product VALUES(null,2,'http://127.0.0.1:3000/img/thumb3.jpg',"DW-5600HDR-1",1388,"2018-9-15");
+INSERT INTO move_cs_product VALUES(null,2,'http://127.0.0.1:3000/img/thumb4.jpg',"DW-5600SLG-7",1688,"2018-12-02");
+INSERT INTO move_cs_product VALUES(null,2,'http://127.0.0.1:3000/img/thumb5.jpg',"GA-135DD-1A",1888,"2018-9-26");
+INSERT INTO move_cs_product VALUES(null,2,'http://127.0.0.1:3000/img/thumb6.jpg',"GAW-100CG-4A",1988,"2018-11-12");
+INSERT INTO move_cs_product VALUES(null,2,'http://127.0.0.1:3000/img/thumb7.jpg',"GWF-1035F-1",988,"2018-3-28");
+INSERT INTO move_cs_product VALUES(null,2,'http://127.0.0.1:3000/img/thumb8.jpg',"DW-6900SLG-1",888,"2018-6-19");
+INSERT INTO move_cs_product VALUES(null,1,'http://127.0.0.1:3000/img/thumb22.jpg',"DW-SD164-4A",1891,"2018-4-07");
+INSERT INTO move_cs_product VALUES(null,1,'http://127.0.0.1:3000/img/thumb23.jpg',"WQ-DLAJSD-1",9798,"2018-6-27");
+INSERT INTO move_cs_product VALUES(null,1,'http://127.0.0.1:3000/img/thumb24.jpg',"DW-6ASDLG-64",1838,"2018-6-11");
+INSERT INTO move_cs_product VALUES(null,1,'http://127.0.0.1:3000/img/thumb27.jpg',"CS-A00SLG-2",2108,"2018-8-10");
+INSERT INTO move_cs_product VALUES(null,1,'http://127.0.0.1:3000/img/thumb28.jpg',"DW-6DAS6LG-8",390,"2018-9-16");
+INSERT INTO move_cs_product VALUES(null,1,'http://127.0.0.1:3000/img/thumb29.jpg',"WD-6ASD8LG-9",5408,"2018-7-17");
+INSERT INTO move_cs_product VALUES(null,1,'http://127.0.0.1:3000/img/thumb30.jpg',"DW-5H1LG-9",8648,"2018-1-12");
+INSERT INTO move_cs_product VALUES(null,1,'http://127.0.0.1:3000/img/thumb31.jpg',"GS-9ASDG-1",1508,"2018-12-15");
+INSERT INTO move_cs_product VALUES(null,1,'http://127.0.0.1:3000/img/thumb32.jpg',"UR-6900SLG-1",8918,"2018-11-29");
 
 
 

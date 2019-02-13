@@ -80,7 +80,7 @@ export default {
                 Toast("用户已存在");
                 return;
             }
-            this.axios.get("http://127.0.0.1:3000/register?uname="+uname+"&upwd="+upwd)
+            this.axios.post("http://127.0.0.1:3000/register",`uname=${uname}&upwd=${upwd}`)
             .then(res=>{
                 if(res.data.code>0){
                     Toast(res.data.msg);

@@ -22,6 +22,10 @@ Vue.component(SwipeItem.name,SwipeItem);//轮播图子标签
 Vue.component(Button.name,Button);//加载按钮
 //3.在Home.vue 使用组件
 
+//post请求 引入 qs 
+import qs from "qs";
+Vue.prototype.qs=qs;
+
 //4.引入axios库
 import axios from "axios"
 //5.修改配置信息，跨域保存session值
@@ -48,11 +52,38 @@ Vue.filter("datetimeFilter",function(val){
 Vue.filter("money",function(val){
   return val.toFixed(2);
 })
+/*vuex*/
+import Vuex from "vuex";
+Vue.use(Vuex);
+var store=new Vuex.Store({
+     state:{cartCount:0},
+  mutations:{
+    update(state){
+      axios.get("http://127.0.0.1:3000/getCount")
+      .then(res=>{
+       if(res.data.count==null){
+          state.cartCount=0;
+       }else{
+        state.cartCount=res.data.count;
+       }
+     
+      })
+
+    }
+  },
+  getters:{
+    optCartCount:function(state){
+      return state.cartCount;
+    }
+  }
+})
+
 
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
   router,
+  store,
   components: { App },
   template: '<App/>'
 })

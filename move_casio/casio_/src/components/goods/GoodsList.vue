@@ -9,14 +9,17 @@
                <li>></li>
                <li>手表</li>
                <li>></li>
-               <li>主题系列</li>
+               <li v-if="flId==1">主题系列</li>
+               <li v-else>金属系列</li>
            </ul>
        </div>
        <div>
-           <p class="myp">主题系列</p>
+           <p v-if="flId==1" class="myp">主题系列</p>
+           <p v-else class="myp">金属系列</p>
        </div>
        <div>
-           <img src="../../img/jt.jpg" alt="">
+           <img v-if="flId==1" src="../../img/jt.jpg" alt="">
+           <img v-else src="../../img/g-shock1206.png" alt="">
        </div>
        <nav>
            <ul>
@@ -28,7 +31,8 @@
        </nav>
        <div>
            <div @click="showorhide" class="myblack">
-              <h5>主题系列</h5>
+              <h5 v-if="flId==1">主题系列</h5>
+              <h5 v-else>金属系列</h5>
               <span>{{msg}}</span>
            </div>
            <div v-show="isShow" class="mygoodslist">
@@ -43,6 +47,8 @@
                     </ul>
                  </router-link>
                </div>
+                     <div v-if="daodi" @click="gengduo" class="myauto">查看更多</div>
+                     <div class="myauto mywidth" v-else>到底了</div>
             </div>
             <footer-box></footer-box>
        </div>
@@ -56,18 +62,23 @@ export default {
        "footer-box":footer
     },
     created() {
-        this.getProductList()
+        this.getProductList();
+        this.flId=this.$route.query.id
     },
     data(){
         return{
+            flId:'',
             msg:"-",
             isShow:true,
-            list:[]
+            list:[],
+            pageIndex:0,
+            pageCount:1,
+            pageSize:4,
+            daodi:true
         }
     },
     methods:{
-      
-        showorhide(){
+       showorhide(){
             if(this.isShow){
                 this.isShow=false;
                 this.msg="+"
@@ -77,11 +88,24 @@ export default {
             }
         },
         getProductList(){
-             this.axios.get("http://127.0.0.1:3000/getProductList")
+              this.pageIndex++;
+              var fl=this.$route.query.id;
+              console.log(fl);
+              var pno=this.pageIndex;
+              var ps=this.pageSize;
+              this.axios.get("http://127.0.0.1:3000/getGoodsList?pno="+pno+"&pageSize"+ps+"&fl="+fl)
              .then(res=>{
-                this.list=res.data;
+                 console.log(res)
+                 var rows=this.list.concat(res.data.data);
+                 this.list=rows;
+                if(res.data.data==""){
+                    this.daodi=false;
+                }
              })
-        } 
+        },
+        gengduo(){
+           this.getProductList();
+        }
     }
 }
 </script>
@@ -199,8 +223,12 @@ export default {
         flex-wrap: wrap;
         justify-content:space-between;
     }
-
-   
+    .myauto{
+        margin:10px 40%;
+    }
+    .mywidth{
+        width:100%;
+    }
 </style>
 
 

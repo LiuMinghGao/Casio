@@ -1,8 +1,12 @@
 //vue_app_server 服务器
 
 const express = require("express");
+const bodyParser=require('body-parser');
 var app = express();
 app.use(express.static("public"));
+app.use(bodyParser.urlencoded({
+  extended:false
+ }));
 app.listen(3000);
 const pool = require("./pool");
 
@@ -37,9 +41,9 @@ app.get("/carousel",(req,res)=>{
 })
 
 /**注册**/
-app.get("/register",(req,res)=>{
-   var uname=req.query.uname;
-   var upwd=req.query.upwd;
+app.post("/register",(req,res)=>{
+   var uname=req.body.uname;
+   var upwd=req.body.upwd;
    var reg=/^[\w]{8,12}$/;
    var reg2=/^[\w]{8,12}$/;
    if(!reg.test(uname)){
@@ -74,9 +78,9 @@ app.get("/exist",(req,res)=>{
 })
 
 /**登录**/
-app.get("/login",(req,res)=>{
-   var uname=req.query.uname;
-   var upwd=req.query.upwd;
+app.post("/login",(req,res)=>{
+   var uname=req.body.uname;
+   var upwd=req.body.upwd;
    pool.query("SELECT count(uid) as c,uid FROM move_cs_user WHERE uname = ? AND upwd = md5(?)",[uname,upwd],(err,result)=>{
     if(err)throw err;
     var c = result[0].c;
@@ -217,6 +221,57 @@ app.get("/getComments", (req, res) => {
   });
 })
 
+//#功能六:商品列表
+app.get("/getGoodsList", (req, res) => {
+  //1:参数       pno 页码;pageSize 页大小
+  var fl=req.query.fl;
+  var pno = req.query.pno;
+  var pageSize = req.query.pageSize;
+  //1.2:默认值
+  if (!pno) {
+    pno = 1;
+  }
+  if (!pageSize) {
+    pageSize = 6;
+  }
+  //2:验证正则表达式
+  var reg = /^[0-9]{1,}$/;
+  if (!reg.test(pno)) {
+    res.send({ code: -1, msg: "页码格式不正确" });
+    return;
+  }
+  if (!reg.test(pageSize)) {
+    res.send({ code: -2, msg: "页大小格式不正确" });
+    return;
+  }
+  //  查询总页数
+  var progress = 0; //sql执行进度
+  obj = { code: 1 };
+  pool.query("SELECT count(pid) as c FROM move_cs_product", (err, result) => {
+    if (err) throw err;
+    //console.log(result[0].c);
+    var pageCount = Math.ceil(result[0].c / pageSize);
+    obj.pageCount = pageCount;
+    progress += 50;
+    if (progress == 100) {
+      res.send(obj);
+    }
+  });
+  //  查询当前页内容
+  var offset = parseInt((pno - 1) * pageSize);
+  pageSize = parseInt(pageSize);
+  pool.query("SELECT * FROM move_cs_product WHERE fl = ? LIMIT ?,? ",[fl,offset,pageSize], (err, result) => {
+    if (err) throw err;
+    //console.log(result);
+    obj.data = result;
+    progress += 50;
+    if (progress == 100) {
+      res.send(obj);
+    }
+  });
+});
+
+
 //商品列表信息
 app.use("/getProductList",(req,res)=>{
    pool.query("SELECT * FROM move_cs_product",(err,result)=>{
@@ -224,6 +279,7 @@ app.use("/getProductList",(req,res)=>{
      res.send(result)
    })
 })
+//商品详情
 app.use("/getDetails",(req,res)=>{
     var did=req.query.did;
     pool.query("SELECT * FROM move_cs_details WHERE did=?",[did],(err,result)=>{
@@ -239,23 +295,40 @@ app.use("/addCart",(req,res)=>{
     res.send("添加失败");
     return;
   }
-  var did   = req.query.did;
-  var price =req.query.price;
-  var count = parseInt(req.query.count);
-    pool.query("INSERT INTO `move_cs_cart`(`id`, `uid`,`did`,`price`,`count`) VALUES(null,?,?,?,?)",[uid,did,price,count], (err, result)=>{
-        if (err) throw err;
-        if (result.affectedRows > 0) {
-          res.send({ code: 1, msg: "添加成功" });
-        }else{
-          res.send({ code: -1, msg: "添加失败" });
-        }
-    })
+  var did=req.query.did;
+  var price=req.query.price;
+  var count=parseInt(req.query.count);
+  pool.query("SELECT count as c FROM move_cs_cart WHERE did=? AND uid=?",[did,uid],(err,result)=>{
+      if(err) throw err;
+      if(result.length>0){
+          var count2=result[0].c+count;
+          pool.query("UPDATE move_cs_cart SET count=? WHERE did=? AND uid=?",[count2,did,uid],(err,result)=>{
+            if(err) throw err;
+            if (result.affectedRows > 0) {
+              res.send({ code: 1, msg: "添加成功" });
+            }else{
+              res.send({ code: -1, msg: "添加失败" });
+            }
+          })
+      }else{
+          pool.query("INSERT INTO `move_cs_cart`(`id`, `uid`,`did`,`price`,`count`) VALUES(null,?,?,?,?)",[uid,did,price,count], (err, result)=>{
+            if (err) throw err;
+            if (result.affectedRows > 0) {
+              res.send({ code: 1, msg: "添加成功" });
+            }else{
+              res.send({ code: -1, msg: "添加失败" });
+            }
+        })
+      }
+  })
+
+   
 })
 
 //获取购物车信息
 app.get("/getcartlist",(req,res)=>{
   var uid=req.session.uid;
- pool.query("SELECT d.title,d.img,c.count,c.did,c.price,c.id FROM move_cs_details d,move_cs_cart c WHERE d.did=c.did AND c.uid=?",[uid],(err,result)=>{
+ pool.query("SELECT d.title,d.img,c.count,c.did,c.price,c.id FROM move_cs_product d,move_cs_cart c WHERE d.pid=c.did AND c.uid=?",[uid],(err,result)=>{
     if(err) throw err;
     res.send(result)
   })
@@ -313,3 +386,41 @@ app.get("/delete",(req,res)=>{
       }
     })
  })
+//获取购物车数量
+app.get("/getCount",(req,res)=>{
+  var uid=req.session.uid;
+  if(!uid){
+    res.send("用户未登陆");
+    return;
+  }
+	pool.query("SELECT sum(count) as c FROM move_cs_cart WHERE uid=?",[uid],(err,result)=>{
+		if(err) throw err;
+	  res.send({code:1,count:result[0].c});
+	})
+})
+
+
+//修改密码 根据uid查询相对应的密码 客户端验证旧密码是否正确
+app.post("/checkUpwd",(req,res)=>{
+  var uid=req.session.uid;
+  var jupwd=req.body.jupwd;
+  var upwd=req.body.upwd;
+  pool.query("SELECT * FROM move_cs_user WHERE uid=? AND upwd=md5(?)",[uid,jupwd],(err,result)=>{
+      if(err) throw err;
+      if(result.length>0){
+        pool.query("UPDATE move_cs_user SET upwd=md5(?) WHERE uid=?",[upwd,uid],(err,result)=>{
+          if(err) throw err;
+          if(result.affectedRows > 0){
+            req.session.uid=null;
+            res.send({code:1,msg:"修改成功"});
+          }else{
+            res.send({code:-1,msg:"修改失败"});
+          }
+        })
+      }else{
+        res.send({code:-2,msg:"旧密码不正确"});
+      }
+  })
+})
+
+

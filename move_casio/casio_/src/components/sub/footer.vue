@@ -3,21 +3,21 @@
        <div class="logos">
            <div class="lianjie">相关链接</div>
            <div class="myflex">
-              <div>
+              <div class="mysize">
                   <div><img src="../../img/weixin-new.jpg" alt=""></div>
                   <p>卡西欧官方微信</p>
               </div>
-              <div>
+              <div class="mysize">
                   <div><img src="../../img/weibo3b.png" alt=""></div>
                   <p>卡西欧官方微博</p>
               </div>
            </div>
            <div class="myflex">
-              <div>
+              <div class="mysize">
                 <div><img src="../../img/202-113.jpg" alt=""></div>
                 <p>卡西欧官方商城</p>
               </div>
-              <div>
+              <div class="mysize">
                 <div><img src="../../img/contactservice.jpg" alt=""></div>
                 <p>9:00-18:00 (国定假日除外)</p>
               </div>
@@ -61,14 +61,18 @@ export default {
     font-size: 1rem;
   }
   .myflex{
+    width:100%;
     display: flex;
-    margin-left: 1rem;
+    padding:0 1rem;
   }
   .myflex div p{
     padding-left: 1rem;
   }
   .myflex img{
-    width:10.5rem;
+    width:100%;
+  }
+  .mysize{
+    width:50%
   }
   .home-footer{
     margin-top:1.1rem;

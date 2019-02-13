@@ -10,7 +10,8 @@ import NewsInfo from "./components/home/NewsInfo.vue";
 import GoodsList from "./components/goods/GoodsList.vue";
 import GoodsInfo from "./components/goods/GoodsInfo.vue";
 import shopList from "./components/tabbar/shopList.vue";
-
+import Safety from "./components/tabbar/Safety.vue";
+import shopFl from "./components/tabbar/shop_fl.vue"
 
 Vue.use(Router)
 
@@ -25,7 +26,9 @@ export default new Router({
     {path:'/NewsInfo',component:NewsInfo},
     {path:'/GoodsList',component:GoodsList},
     {path:'/GoodsInfo',component:GoodsInfo},
-    {path:'/shopList',component:shopList}
+    {path:'/shopList',component:shopList},
+    {path:'/Safety',component:Safety},
+    {path:'/shopFl',component:shopFl}
    
   ]
 })
