@@ -31,7 +31,7 @@ export default {
    .shopUl li{
        box-sizing:border-box;
        padding: 50px 100px;
-       background: #000;
+       background: #ff4c13;
        text-align: center
     }
     .shopUl li a{

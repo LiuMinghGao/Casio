@@ -26,6 +26,7 @@
             <div class="safety"><router-link to="/Safety">安全中心</router-link></div>
             <div><button @click="logout">退出登录</button></div>
         </div>
+        <div class="loginKong"></div>
     </div>
 </template>
 <script>
@@ -145,6 +146,13 @@ export default {
   }
   .user div:first-child{
       margin:0 10px;
+  }
+  .user{
+      text-align: center
+  }
+  .loginKong{
+      background: #fff;
+      height: 27rem
   }
 </style>
 

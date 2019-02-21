@@ -12,7 +12,7 @@
              </div>
              <!--一条购物车-->
              <div v-for="(p,i) in list" :key="i" class="myshoplist">
-                <div class="mycheck"><img :src="p.checked==true?'http://127.0.0.1:3000/img/xz.png':'http://127.0.0.1:3000/img/wxz.png'"  @click="select(p)"></div>
+                <div class="mycheck"><img :src="p.checked==true?'http://127.0.0.1:3000/img/xz.png':'http://127.0.0.1:3000/img/wxz.png'"  @click="select(p,i)"></div>
                 <div class="myimgs"><img :src="p.img" alt=""></div>
                 <div>
                    <p>{{p.title}}</p>
@@ -30,7 +30,7 @@
              <hr>
              <div class="myfooter">
                 <div>
-                    <span>小计：￥{{total}}</span><span @click="removeAll">清空购物车</span><button>去结算(<b>{{number}}</b>)</button>
+                    <span>小计：￥{{total}}</span><span @click="removeAll">清空购物车</span><button>去结算(<b>{{num}}</b>)</button>
                 </div>
              </div>
        </div>
@@ -41,16 +41,24 @@
 <script>
 export default {
   // 计算总价
-  computed: {
+ computed: {
     total: function() {
       var sum = 0;
-      this.list.forEach(function(p) {
+      this.list.forEach((p)=>{
         if (p.checked) {
           sum += p.price * p.count;
         }
       });
-      console.log(sum);
       return sum;
+    },
+    num: function() {
+      var c = 0;
+      this.list.forEach((p)=>{
+        if (p.checked) {
+          c +=p.count;
+        }
+      });
+      return c;
     }
   },
   //生命周期，加载完成前
@@ -67,7 +75,6 @@ export default {
       //验证是否登录
       sflogin: false,
       //选中商品结算数量
-      number: 0,
       checkAll: false,
       //选中的商品的个数  全选单选功能
       checkCount: 0,
@@ -76,55 +83,32 @@ export default {
   methods: {
     //全选
     selectall() {
+        this.checkAll = !this.checkAll;
+        this.list.forEach((p,i)=>{
+          p.checked = this.checkAll;
+          this.$set(this.list, i, p);
+        });
         if (this.checkAll) {
-            this.checkCount = 0;
-            this.number = 0;
-            this.list.forEach(p=>{
-                if (p.checked) {
-                  p.checked = false;
-                }
-            });
+           this.checkCount = 0;
         }else {
-            this.list.forEach((p)=>{
-              if (typeof p.checked == "undefined") {
-                  this.$set(p, "checked", true);
-              }else{
-                  p.checked = !p.checked;
-              }
-                 this.number += p.count;
-            })
-            this.checkCount = this.list.length;
-            // this.list.forEach(p=>{
-            //     if (!p.checked) {
-            //         p.checked = true;
-            //         this.number += p.count;
-            //     }
-            // });
+           this.checkCount = this.list.length;
         }
-          this.checkAll = !this.checkAll;
     },
     //单选
-    select(p) {
-      if (typeof p.checked == "undefined") {
-        this.$set(p, "checked", true);
-      } else {
-        p.checked = !p.checked;
-      }
-     
+    select(p,i) {      
+      p.checked = !p.checked;
+      this.$set(this.list, i, p);
       if (p.checked) {
         this.checkCount++;
-        this.number += p.count;
       } else {
         this.checkCount--;
-        this.number -= p.count;
       }
-
       if (this.checkCount == this.list.length) {
         this.checkAll = true;
       } else {
         this.checkAll = false;
       }
-     
+      
     },
     //删除单个商品
     remove(p) {
@@ -137,11 +121,11 @@ export default {
         return item != p;
       });
       //删除数据库商品
-      //  var id = p.id;
-      //  this.axios.get("http://127.0.0.1:3000/delete?id=" + id).then(res => {
-      //  this.getshoplist();
-      //  this.$store.commit("update");
-      // });
+        var id = p.id;
+        this.axios.get("http://127.0.0.1:3000/delete?id=" + id).then(res => {
+        this.getshoplist();
+        this.$store.commit("update");
+       });
     },
     //删除所有商品
     removeAll() {
@@ -172,6 +156,9 @@ export default {
     getshoplist() {
       this.axios.get("http://127.0.0.1:3000/getcartlist").then(res => {
         this.list = res.data;
+        this.list.forEach((elem)=>{
+          elem.checked=false;
+        });
       });
     },
     //数量减少 更新数据库购物车
@@ -302,5 +289,8 @@ export default {
 .mycheck img {
   width: 20px;
   height: 20px;
+}
+.mui-numbox .mui-numbox-input, .mui-numbox .mui-input-numbox{
+  padding: 0 2px !important
 }
 </style>

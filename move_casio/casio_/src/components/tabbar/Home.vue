@@ -87,14 +87,12 @@ import footer from "../sub/footer.vue";
           this.axios.get("http://127.0.0.1:3000/carousel")
           .then(res=>{
              this.list=res.data;
-             console.log(res.data[0].img);
-             
           })
         },
         getnews(){
           this.axios.get("http://127.0.0.1:3000/getnews")
           .then(res=>{
-             this.list2=(res.data.data).slice(1,4);
+             this.list2=(res.data.data).slice(0,4);
           })
       }
     }
